@@ -1,24 +1,38 @@
-import logo from './logo.svg';
+import { createContext, useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
+import Header from './components/Header/Header';
+import NotFound from './components/NotFound/NotFound';
+import PostDetails from './components/PostDetails/PostDetails';
+import TimeLine from './components/TimeLine/TimeLine';
+
+export const PostContext = createContext()
 
 function App() {
+  const [post, setPost] = useState([]);
+  useEffect(() => {
+    const url = 'https://jsonplaceholder.typicode.com/posts';
+    fetch(url)
+      .then(res => res.json())
+      .then(data => setPost(data))
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+
+      <PostContext.Provider value={[post, setPost]}>
+
+        <BrowserRouter>
+          <Header></Header>
+          <Routes>
+
+            <Route path='/' element={<TimeLine />} />
+            <Route path='/postDetails/:postId' element={<PostDetails />} />
+            <Route path='*' element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </PostContext.Provider>
+    </>
   );
 }
 
